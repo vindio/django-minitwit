@@ -25,3 +25,6 @@ Django version of flask example minitwit
          manage.py runserver
          
          the application will greet you on http://localhost:8000/
+
+
+Based on: https://github.com/mitsuhiko/flask/tree/master/examples/minitwit
