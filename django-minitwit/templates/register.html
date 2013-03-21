@@ -1,0 +1,14 @@
+{% extends "layout.html" %}{% load minitwit_tags %}
+{% block title %}Sign Up{% endblock %}
+{% block body %}
+  <h2>Sign Up</h2>
+  {% if form.errors %}<div class=error><strong>Error:</strong> {{ form.non_field_errors }}{% form_field_errors form %}</div>{% endif %}
+  <form action="" method=post>{% csrf_token %}
+  <dl>
+      {% for field in form %}
+      <dt>{{ field.label_tag }}:</dt><dd>{{ field }}</dd>
+      {% endfor %}
+  </dl>
+    <div class=actions><input type=submit value="Sign Up"></div>
+  </form>
+{% endblock %}

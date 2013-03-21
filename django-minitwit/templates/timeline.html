@@ -1,0 +1,65 @@
+{% extends "layout.html" %}{% load minitwit_tags %}
+{% block title %}
+{% if endpoint == 'public_timeline' %}
+Public Timeline
+{% elif endpoint == 'user_timeline' %}
+{{ profile_user.username }}'s Timeline
+{% else %}
+My Timeline
+{% endif %}
+{% endblock %}
+{% block body %}
+  <h2>{{ title }}</h2>
+  {% if user.is_authenticated %}
+    {% if endpoint == 'user_timeline' %}
+      <div class=followstatus>
+      {% if user == profile_user %}
+        This is you!
+      {% elif followed %}
+        You are currently following this user.
+        <form action="{% url "unfollow_user" profile_user.username %}" method="post">{% csrf_token %}
+            <input type="submit" value="Unfollow User" class=unfollow href="{% url "unfollow_user" profile_user.username %}"></input>
+        </form>
+      {% else %}
+      You are not yet following this user.
+        <form action="{% url "follow_user" profile_user.username %}" method="post">{% csrf_token %}
+            <input type="submit" value="Follow User" class=follow href="{% url "follow_user" profile_user.username %}"></input>
+        </form>
+      {% endif %}
+      </div>
+    {% elif endpoint == 'timeline' %}
+      <div class=twitbox>
+        <h3>What's on your mind {{ user.username }}?</h3>
+        <form action="{% url "add_message" %}" method="post">{% csrf_token %}
+          <p><input type=text name=text size=60><!--
+          --><input type=submit value="Share">
+        </form>
+      </div>
+    {% endif %}
+  {% endif %}
+  <ul class="messages">
+  {% for message in twits %}
+  <li><img src="{{ message.author.email|gravatar:"48" }}"></img>
+      <p><strong><a href="{% url "user_timeline" message.author.username %}">{{ message.author.username }}</a></strong>
+      <small>&mdash; {{ message.pub_date|date:"DATETIME_FORMAT"}}</small></p>
+      <p>{{ message.text }}</p>
+  {% empty %}
+      <li><em>There's no message so far.</em>
+  {% endfor %}
+  </ul>
+  {% if is_paginated %}
+  <div class="pagination">
+  <span class="step-links">
+    {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% endif %}
+    <span class="current">
+    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+    </span>
+    {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}">next</a>
+    {% endif %}
+    </span>
+  </div>
+  {% endif %}
+{% endblock %}
